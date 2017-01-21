@@ -21,6 +21,7 @@ type Graph struct {
 }
 
 type node struct {
+    Name          string
 	edges         []edge
 	reversedEdges []edge
 	index         int
@@ -71,13 +72,30 @@ func New(kind GraphType) *Graph {
 	}
 	return g
 }
-
 // MakeNode creates a node, adds it to the graph and returns the new node.
 func (g *Graph) MakeNode() Node {
 	newNode := &node{index: len(g.nodes)}
 	newNode.container = Node{node: newNode, Value: new(interface{})}
 	g.nodes = append(g.nodes, newNode)
 	return newNode.container
+}
+
+// MakeNamedNode creates a node, adds it to the graph and returns the new node.
+func (g *Graph) MakeNamedNode(name string) Node {
+	newNode := &node{index: len(g.nodes), Name: name}
+	newNode.container = Node{node: newNode, Value: new(interface{})}
+	g.nodes = append(g.nodes, newNode)
+	return newNode.container
+}
+
+// ReachableNeighbors returns a list of neighbors,
+// in case of a directed graph only the once which have outgoing edges to them
+func (g *Graph) ReachableNeighbors(n Node) []string {
+    res := []string{}
+    for i := range n.node.edges {
+        res = append(res, n.node.edges[i].end.Name)
+    }
+    return res
 }
 
 // RemoveNode removes a node from the graph and all edges connected to it.
